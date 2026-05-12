@@ -1,0 +1,35 @@
+# ============================================================
+# .gitignore — School SaaS Platform
+# ============================================================
+# Ignore everything by default
+*
+
+# ============================================================
+# Exceptions (Files & Folders to strictly INCLUDE in GitHub)
+# ============================================================
+
+# Allow the git system itself
+!.git/
+!.gitignore
+
+# Folders to keep
+!backend/
+!backend/**
+!frontend/
+!frontend/**
+!SC-Portals/
+!SC-Portals/**
+
+# Specific files at root to keep
+!README.md
+!requirements.txt
+!setup.md
+!PROJECT_STRUCTURE.md
+
+# IMPORTANT: Ensure any sub-secrets inside the allowed folders are STILL ignored:
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.db
