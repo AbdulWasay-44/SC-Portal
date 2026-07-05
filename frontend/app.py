@@ -11,10 +11,16 @@ import streamlit.components.v1 as components
 import sys
 from pathlib import Path
 
-# Add backend and parent directory to path for imports
-backend_path = Path(__file__).resolve().parent.parent / "backend"
-sys.path.insert(0, str(backend_path))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+# Add backend, frontend, and project root directories to path for imports.
+# Explicitly adding the frontend directory (rather than relying on Python's
+# implicit "script directory" sys.path behavior) keeps imports working
+# consistently across `streamlit run`, test runners, and deployment tools.
+_frontend_path = Path(__file__).resolve().parent
+_project_root = _frontend_path.parent
+_backend_path = _project_root / "backend"
+for _p in (str(_backend_path), str(_project_root), str(_frontend_path)):
+    if _p not in sys.path:
+        sys.path.insert(0, _p)
 
 from analytics_service import AnalyticsService
 from database import Database
@@ -65,6 +71,7 @@ def initialize_session_state():
         "saas_pending_payment_id": None,
         "saas_hub_tab": None,
         "master_admin_username": None,
+        "flash_message": None,
     }
     for key, value in defaults.items():
         if key not in st.session_state:
@@ -72,8 +79,10 @@ def initialize_session_state():
 
 
 def navigate(page: str):
-    """Switch visible page."""
+    """Switch visible page and immediately rerun so the new page renders
+    right away, instead of waiting for the user's next interaction."""
     st.session_state.current_page = page
+    st.rerun()
 
 
 def handle_login(role: str, username: str, password: str, database: Database):
@@ -89,8 +98,8 @@ def handle_login(role: str, username: str, password: str, database: Database):
     st.session_state.user_role = role
     st.session_state.current_username = username
     st.session_state.user_id = database.get_user_id(username)
+    st.session_state.flash_message = ("success", f"{role.title()} logged in successfully.")
     navigate("teacher_service" if role == "teacher" else "student_service")
-    st.success(f"{role.title()} logged in successfully.")
 
 
 def handle_register(role: str, username: str, password: str, database: Database):
@@ -131,8 +140,8 @@ def handle_school_admin_login(database: Database, school_code: str, username: st
     st.session_state.user_id = database.get_user_id(username)
     st.session_state.school_code = school_code
     st.session_state.school_role = "admin"
+    st.session_state.flash_message = ("success", "School admin logged in successfully.")
     navigate("school")
-    st.success("School admin logged in successfully.")
 
 
 def logout():
@@ -141,8 +150,8 @@ def logout():
     st.session_state.user_role = None
     st.session_state.current_username = None
     st.session_state.user_id = None
+    st.session_state.flash_message = ("success", "Logged out successfully.")
     navigate("welcome")
-    st.success("Logged out successfully.")
 
 
 def render_sidebar():
@@ -185,7 +194,7 @@ def render_sidebar():
         # ============ AUTHENTICATION SECTION ============
         st.markdown("### Authentication")
         login_label = "🚪 Logout" if st.session_state.is_logged_in else "🔐 Login"
-        if st.button(login_label, use_container_width=True):
+        if st.button(login_label, width='stretch'):
             if st.session_state.is_logged_in:
                 logout()
             else:
@@ -199,19 +208,19 @@ def render_sidebar():
         col1, col2 = st.columns(2)
         
         with col1:
-            if st.button("👨‍🏫 Teacher", use_container_width=True, key="nav_teacher"):
+            if st.button("👨‍🏫 Teacher", width='stretch', key="nav_teacher"):
                 navigate("teacher_service")
-            if st.button("🏫 School", use_container_width=True, key="nav_school"):
+            if st.button("🏫 School", width='stretch', key="nav_school"):
                 navigate("school")
-            if st.button("📚 History", use_container_width=True, key="nav_history"):
+            if st.button("📚 History", width='stretch', key="nav_history"):
                 navigate("history")
         
         with col2:
-            if st.button("👨‍🎓 Student", use_container_width=True, key="nav_student"):
+            if st.button("👨‍🎓 Student", width='stretch', key="nav_student"):
                 navigate("student_service")
-            if st.button("🏠 Welcome", use_container_width=True, key="nav_welcome"):
+            if st.button("🏠 Welcome", width='stretch', key="nav_welcome"):
                 navigate("welcome")
-            if st.button("⚙️ Settings", use_container_width=True, key="nav_settings"):
+            if st.button("⚙️ Settings", width='stretch', key="nav_settings"):
                 navigate("settings") if hasattr(st.session_state, 'settings') else st.info("Settings page coming soon")
         
         st.markdown("---")
@@ -219,12 +228,12 @@ def render_sidebar():
         # ============ PORTAL ACCESS SECTION ============
         st.markdown("### Premium Access")
         
-        if st.button("🎛️ Master Admin", use_container_width=True):
+        if st.button("🎛️ Master Admin", width='stretch'):
             navigate("master_admin")
         
         uid = st.session_state.get("user_id")
         if AccessControl.can_open_school_portal(uid):
-            if st.button("🏫 School Portal", use_container_width=True):
+            if st.button("🏫 School Portal", width='stretch'):
                 navigate("school_portal")
         else:
             st.info("🔒 School Portal unlocks after subscription + registration.", icon="ℹ️")
@@ -290,10 +299,10 @@ def render_login_page(database: Database):
             )
             login_col, register_col = st.columns(2)
             with login_col:
-                if st.button("Teacher Login", use_container_width=True):
+                if st.button("Teacher Login", width='stretch'):
                     handle_login("teacher", teacher_login_username, teacher_login_password, database)
             with register_col:
-                if st.button("Teacher Register", use_container_width=True):
+                if st.button("Teacher Register", width='stretch'):
                     handle_register("teacher", teacher_login_username, teacher_login_password, database)
 
     with student_col:
@@ -305,16 +314,11 @@ def render_login_page(database: Database):
             )
             login_col, register_col = st.columns(2)
             with login_col:
-                if st.button("Student Login", use_container_width=True):
+                if st.button("Student Login", width='stretch'):
                     handle_login("student", student_login_username, student_login_password, database)
             with register_col:
-                if st.button("Student Register", use_container_width=True):
+                if st.button("Student Register", width='stretch'):
                     handle_register("student", student_login_username, student_login_password, database)
-
-
-def render_student_service_page():
-    """Legacy placeholder removed; student service is rendered by the full portal."""
-    st.write("")
 
 
 def get_student_deadlines() -> List[Dict[str, str]]:
@@ -541,7 +545,7 @@ def render_assessment_creator(database: Database, teacher_username: str):
                 }
             )
 
-        create_assessment = st.form_submit_button("Create Assessment", use_container_width=True)
+        create_assessment = st.form_submit_button("Create Assessment", width='stretch')
 
     if create_assessment:
         if not (st.session_state.is_logged_in and st.session_state.user_role == "teacher"):
@@ -646,7 +650,7 @@ def render_student_service_page(services: Dict[str, Any]):
         st.subheader("Assignment Submission")
         deadline_df = pd.DataFrame(get_student_deadlines())
         st.write("Upcoming deadlines")
-        st.dataframe(deadline_df, use_container_width=True)
+        st.dataframe(deadline_df, width='stretch')
 
         with st.form("student_submission_form"):
             col1, col2 = st.columns(2)
@@ -666,7 +670,7 @@ def render_student_service_page(services: Dict[str, Any]):
                     type=["pdf", "docx", "jpg", "jpeg", "png", "zip"],
                     help="Supported formats: PDF, DOCX, images, and ZIP archives.",
                 )
-            submit_student_work = st.form_submit_button("Submit Work", use_container_width=True)
+            submit_student_work = st.form_submit_button("Submit Work", width='stretch')
 
         if submit_student_work:
             if not (st.session_state.is_logged_in and st.session_state.user_role == "student"):
@@ -744,7 +748,7 @@ def render_student_service_page(services: Dict[str, Any]):
                         for item in submissions
                     ]
                 ),
-                use_container_width=True,
+                width='stretch',
             )
 
     with tab2:
@@ -831,7 +835,7 @@ def render_student_service_page(services: Dict[str, Any]):
             st.write("**Progress Graph**")
             st.line_chart(history_df.set_index("Submitted")["Score"])
             st.write("**Assignment History**")
-            st.dataframe(history_df, use_container_width=True)
+            st.dataframe(history_df, width='stretch')
             st.write("**Strong Areas**")
             st.write(", ".join(sorted(set(strong_areas))[:5]) if strong_areas else "No strong areas identified yet.")
             st.write("**Weak Areas**")
@@ -960,7 +964,7 @@ def render_student_service_page(services: Dict[str, Any]):
                                         f"Write answer for question {idx}",
                                         key=f"assessment_answer_{assessment['id']}_{idx}",
                                     )
-                            submit_attempt = st.form_submit_button("Submit Assessment", use_container_width=True)
+                            submit_attempt = st.form_submit_button("Submit Assessment", width='stretch')
 
                         if submit_attempt:
                             submission_time = current_timestamp()
@@ -1020,7 +1024,7 @@ def render_student_service_page(services: Dict[str, Any]):
                             key=f"quiz_q_{quiz_subject}_{idx}",
                         )
                     )
-                quiz_submit = st.form_submit_button("Submit Practice Quiz", use_container_width=True)
+                quiz_submit = st.form_submit_button("Submit Practice Quiz", width='stretch')
 
             if quiz_submit:
                 score = 0
@@ -1077,7 +1081,7 @@ def render_history_page(services: Dict[str, Any]):
                     for session in sessions
                 ]
             )
-            st.dataframe(history_df, use_container_width=True)
+            st.dataframe(history_df, width='stretch')
 
             for session in sessions:
                 with st.expander(
@@ -1113,7 +1117,7 @@ def render_history_page(services: Dict[str, Any]):
                         for assessment in assessments
                     ]
                 ),
-                use_container_width=True,
+                width='stretch',
             )
         else:
             st.caption("No teacher-created assessments yet.")
@@ -1143,7 +1147,7 @@ def render_history_page(services: Dict[str, Any]):
                     for item in submissions
                 ]
             )
-            st.dataframe(submissions_df, use_container_width=True)
+            st.dataframe(submissions_df, width='stretch')
 
             for item in submissions:
                 with st.expander(
@@ -1180,7 +1184,7 @@ def render_history_page(services: Dict[str, Any]):
                         for item in student_attempts
                     ]
                 ),
-                use_container_width=True,
+                width='stretch',
             )
         else:
             st.caption("No quiz or test attempts saved for this account yet.")
@@ -1258,7 +1262,6 @@ def render_school_admin_page(database: Database, school: Dict[str, Any]):
             st.session_state.school_role = None
             st.session_state.school_admin_view = "Dashboard"
             navigate("welcome")
-            st.rerun()
 
     section = st.session_state.school_admin_view
     members = database.get_school_members(school["id"])
@@ -1269,12 +1272,12 @@ def render_school_admin_page(database: Database, school: Dict[str, Any]):
         st.subheader("Student Management")
         st.write("Admin can add, edit, delete, promote, suspend, or remove students from the school system.")
         student_rows = [member for member in members if member["school_role"] == "student"]
-        st.dataframe(pd.DataFrame(student_rows), use_container_width=True)
+        st.dataframe(pd.DataFrame(student_rows), width='stretch')
     elif section == "Teachers":
         st.subheader("Teacher Management")
         st.write("Admin can assign subjects/classes, manage schedules, and monitor teacher attendance.")
         teacher_rows = [member for member in members if member["school_role"] == "teacher"]
-        st.dataframe(pd.DataFrame(teacher_rows), use_container_width=True)
+        st.dataframe(pd.DataFrame(teacher_rows), width='stretch')
     elif section == "Parents":
         st.subheader("Parents")
         st.info("Parent access and family communication can be managed from this section.")
@@ -1288,7 +1291,7 @@ def render_school_admin_page(database: Database, school: Dict[str, Any]):
                     {"Class": "Grade 10-B", "Teacher": "teacher_demo", "Subjects": "BI, CS, Statistics"},
                 ]
             ),
-            use_container_width=True,
+            width='stretch',
         )
     elif section == "Subjects":
         st.subheader("Subjects")
@@ -1314,7 +1317,7 @@ def render_school_admin_page(database: Database, school: Dict[str, Any]):
                     {"Category": "Fines", "Count": 3},
                 ]
             ),
-            use_container_width=True,
+            width='stretch',
         )
     elif section == "Reports":
         st.subheader("Reports Section")
@@ -1366,7 +1369,7 @@ def render_legacy_school_organization_page(services: Dict[str, Any]):
             school_code = st.text_input("School Access Code")
             admin_username = st.text_input("Admin Username")
             admin_password = st.text_input("Admin Password", type="password")
-            school_admin_login_submit = st.form_submit_button("Open School Website", use_container_width=True)
+            school_admin_login_submit = st.form_submit_button("Open School Website", width='stretch')
 
         if school_admin_login_submit:
             handle_school_admin_login(database, school_code, admin_username, admin_password)
@@ -1379,7 +1382,7 @@ def render_legacy_school_organization_page(services: Dict[str, Any]):
             new_admin_password = st.text_input("Teacher/Admin Password", type="password")
             school_name = st.text_input("School Name")
             new_school_code = st.text_input("New School Access Code")
-            create_school_submit = st.form_submit_button("Create School Website", use_container_width=True)
+            create_school_submit = st.form_submit_button("Create School Website", width='stretch')
 
         if create_school_submit:
             if not new_admin_username or not new_admin_password or not school_name or not new_school_code:
@@ -1404,7 +1407,7 @@ def render_legacy_school_organization_page(services: Dict[str, Any]):
                 with st.form("create_school_form"):
                     school_name = st.text_input("School Name")
                     school_code = st.text_input("School Access Code")
-                    create_school_submit = st.form_submit_button("Create School", use_container_width=True)
+                    create_school_submit = st.form_submit_button("Create School", width='stretch')
                 if create_school_submit:
                     if not school_name or not school_code:
                         st.warning("Enter both school name and school access code.")
@@ -1423,7 +1426,7 @@ def render_legacy_school_organization_page(services: Dict[str, Any]):
             with st.form("join_school_form"):
                 join_school_code = st.text_input("School Access Code", key="join_school_code")
                 school_role = st.selectbox("Join As", ["teacher", "student"], key="join_school_role")
-                join_school_submit = st.form_submit_button("Request Access", use_container_width=True)
+                join_school_submit = st.form_submit_button("Request Access", width='stretch')
             if join_school_submit:
                 if school_role != current_role:
                     st.warning(f"You are logged in as {current_role}. Join using the same account role.")
@@ -1492,9 +1495,9 @@ def render_teacher_service_page(services: Dict[str, Any]):
     with st.sidebar:
         st.markdown("---")
         st.markdown("### Teacher Tools")
-        if st.button("Grading Service", use_container_width=True):
+        if st.button("Grading Service", width='stretch'):
             st.session_state.teacher_service_view = "grading"
-        if st.button("Quiz and Test Maker", use_container_width=True):
+        if st.button("Quiz and Test Maker", width='stretch'):
             st.session_state.teacher_service_view = "assessment_maker"
 
         teacher_view = st.session_state.teacher_service_view
@@ -1677,7 +1680,7 @@ def render_teacher_service_page(services: Dict[str, Any]):
 
     if teacher_view == "grading" and uploaded_files:
         st.header("Start Grading")
-        if st.button("Grade All Assignments", type="primary", use_container_width=True):
+        if st.button("Grade All Assignments", type="primary", width='stretch'):
             if use_custom_criteria and sum(custom_criteria.values()) > total_marks:
                 st.error("Please fix the grading criteria configuration before proceeding.")
                 return
@@ -1847,7 +1850,7 @@ def display_results(results: List[Dict], show_detailed_feedback: bool, container
                 for result in results
             ]
         )
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(df, width='stretch')
 
         st.subheader("Detailed Results")
         for result in results:
@@ -1939,7 +1942,7 @@ def display_analytics(results: List[Dict], analytics_service: AnalyticsService):
     with col1:
         grade_chart = analytics_service.create_grade_distribution_chart()
         if grade_chart.data:
-            st.plotly_chart(grade_chart, use_container_width=True)
+            st.plotly_chart(grade_chart, width='stretch')
     with col2:
         grade_dist = analytics_service.get_grade_distribution()
         st.write("**Grade Statistics:**")
@@ -1994,12 +1997,12 @@ def display_analytics(results: List[Dict], analytics_service: AnalyticsService):
     st.write("**Question Attempts vs Skipped**")
     attempts_chart = analytics_service.create_question_attempts_chart()
     if attempts_chart.data:
-        st.plotly_chart(attempts_chart, use_container_width=True)
+        st.plotly_chart(attempts_chart, width='stretch')
 
     st.write("**Performance Consistency Analysis**")
     consistency_chart = analytics_service.create_performance_consistency_chart()
     if consistency_chart.data:
-        st.plotly_chart(consistency_chart, use_container_width=True)
+        st.plotly_chart(consistency_chart, width='stretch')
         st.caption(
             "Students in the bottom-left are most consistent. Students in the top-right scored well but vary more."
         )
@@ -2009,6 +2012,11 @@ def main():
     initialize_session_state()
     services = initialize_services()
     render_sidebar()
+
+    if st.session_state.flash_message:
+        level, text = st.session_state.flash_message
+        getattr(st, level, st.info)(text)
+        st.session_state.flash_message = None
 
     page = st.session_state.current_page
     if page == "welcome":
@@ -2023,7 +2031,6 @@ def main():
             st.error("School Portal is locked. Complete **subscription payment verification** and **school registration** from the School hub.")
             if st.button("Open School hub", type="primary"):
                 navigate("school")
-                st.rerun()
         else:
             render_school_portal()
     elif page == "student_service":

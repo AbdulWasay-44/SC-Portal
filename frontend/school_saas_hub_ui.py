@@ -338,7 +338,7 @@ def _render_legacy_school_tools(database: Database) -> None:
             school_code = st.text_input("School Access Code", key="legacy_school_code")
             admin_username = st.text_input("Admin Username", key="legacy_admin_username")
             admin_password = st.text_input("Admin Password", type="password", key="legacy_admin_password")
-            submit = st.form_submit_button("Open School Website", use_container_width=True)
+            submit = st.form_submit_button("Open School Website", width='stretch')
 
         if submit:
             if not school_code or not admin_username or not admin_password:
@@ -385,7 +385,7 @@ def _render_legacy_school_tools(database: Database) -> None:
             with st.form("legacy_create_school_form"):
                 school_name = st.text_input("School Name", key="legacy_create_school_name")
                 school_code = st.text_input("School Access Code", key="legacy_create_school_code")
-                create_school_submit = st.form_submit_button("Create School", use_container_width=True)
+                create_school_submit = st.form_submit_button("Create School", width='stretch')
 
             if create_school_submit:
                 ok, msg = AccessControl.require_subscription(int(user_id or 0))
@@ -405,7 +405,7 @@ def _render_legacy_school_tools(database: Database) -> None:
         with st.form("legacy_join_school_form"):
             join_school_code = st.text_input("School Access Code", key="legacy_join_school_code")
             school_role = st.selectbox("Join As", ["teacher", "student"], key="legacy_join_school_role")
-            join_school_submit = st.form_submit_button("Request Access", use_container_width=True)
+            join_school_submit = st.form_submit_button("Request Access", width='stretch')
         if join_school_submit:
             if school_role != current_role:
                 st.warning(f"You are logged in as {current_role}. Join using the same account role.")
@@ -431,15 +431,15 @@ def _render_portal_unlocked(username: str, user_id: int, database: Database) -> 
         )
     col1, col2, col3 = st.columns(3)
     with col1:
-        if st.button("Open School Portal", type="primary", use_container_width=True):
+        if st.button("Open School Portal", type="primary", width='stretch'):
             st.session_state.current_page = "school_portal"
             st.rerun()
     with col2:
-        if st.button("Legacy school join (code)", use_container_width=True):
+        if st.button("Legacy school join (code)", width='stretch'):
             st.session_state.current_page = "school"
             st.rerun()
     with col3:
-        if st.button("Subscription & invoices", use_container_width=True):
+        if st.button("Subscription & invoices", width='stretch'):
             st.session_state.saas_hub_tab = "billing"
             st.rerun()
 
@@ -453,7 +453,7 @@ def _render_billing_tab(user_id: int) -> None:
     if not rows:
         st.caption("No payments yet.")
         return
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
 
 
 def _render_subscription_and_payment(user_id: int, username: str) -> None:
@@ -550,7 +550,7 @@ def _render_subscription_and_payment(user_id: int, username: str) -> None:
                 if st.button(
                     button_text,
                     key=f"pick_{plan['plan_id']}",
-                    use_container_width=True,
+                    width='stretch',
                 ):
                     st.session_state.saas_selected_plan = plan["plan_id"]
                     st.toast(f"✅ Selected {plan['plan_name']}")
@@ -666,7 +666,7 @@ def _render_subscription_and_payment(user_id: int, username: str) -> None:
     
     # Generate payment request
     st.markdown("<div style='margin-top: 24px;'></div>", unsafe_allow_html=True)
-    if st.button("💳 Generate Payment Request", type="primary", key="saas_init_pay", use_container_width=True):
+    if st.button("💳 Generate Payment Request", type="primary", key="saas_init_pay", width='stretch'):
         ok, msg, data = AccessControl.initiate_payment(user_id, username, chosen_plan_id, pm)
         if ok and data:
             st.session_state.saas_pending_payment_id = data["payment_id"]
@@ -707,7 +707,7 @@ def _render_subscription_and_payment(user_id: int, username: str) -> None:
             receipt = st.file_uploader("", type=["png", "jpg", "jpeg", "pdf"], key="saas_receipt", label_visibility="collapsed")
 
         st.markdown("<div style='margin-top: 16px;'></div>", unsafe_allow_html=True)
-        if st.button("📸 Submit Proof for Verification", type="primary", key="saas_submit_proof", use_container_width=True):
+        if st.button("📸 Submit Proof for Verification", type="primary", key="saas_submit_proof", width='stretch'):
             if not txn.strip():
                 st.warning("⚠️ Transaction ID is required.")
             else:
@@ -800,7 +800,7 @@ def _render_school_registration_form(user_id: int, username: str, database: Data
             total_students = st.number_input("Total students (estimate) *", min_value=0, value=100)
             registration_number = st.text_input("Official registration / license number")
 
-        submitted = st.form_submit_button("Create school profile", type="primary", use_container_width=True)
+        submitted = st.form_submit_button("Create school profile", type="primary", width='stretch')
 
     if not submitted:
         return
@@ -920,7 +920,7 @@ def render_saas_master_admin_tab() -> None:
         df = pd.DataFrame(pay_rows)
         agg = df.groupby("status", as_index=False)["amount"].sum()
         fig = px.bar(agg, x="status", y="amount", title="Recorded amounts by status", color="status")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     st.divider()
     st.subheader("Fraud queue (recent)")
@@ -931,7 +931,7 @@ def render_saas_master_admin_tab() -> None:
             )
             fraud = [dict(r) for r in cur.fetchall()]
         if fraud:
-            st.dataframe(pd.DataFrame(fraud), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(fraud), width='stretch', hide_index=True)
         else:
             st.caption("No fraud alerts logged.")
     except Exception:

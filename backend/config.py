@@ -1,5 +1,20 @@
 
 import os
+from pathlib import Path
+
+# --------------------------
+# LOAD .env FILE
+# --------------------------
+# Without this, values in the project's .env file (OPENROUTER_API_KEY, etc.)
+# are never actually picked up by os.getenv() below - they'd only work if
+# the variables were exported into the OS environment some other way.
+try:
+    from dotenv import load_dotenv
+
+    _project_root = Path(__file__).resolve().parent.parent
+    load_dotenv(_project_root / ".env")
+except ImportError:
+    pass
 
 # --------------------------
 # API KEYS (replace with your keys or load securely)

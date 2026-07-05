@@ -15,9 +15,6 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict, Any, Tuple, List
 
 import requests
-from solders.pubkey import PublicKey
-from solders.rpc.requests import GetSignatureStatuses
-from solders.rpc.responses import GetSignatureStatusesResp
 
 from solana_config import SolanaConfig
 from solana_utils import (

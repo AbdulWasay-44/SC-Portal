@@ -425,7 +425,7 @@ def render_activity_monitor():
     st.dataframe(
         display_logs[["timestamp", "display", "status"]],
         hide_index=True,
-        use_container_width=True,
+        width='stretch',
         column_config={
             "timestamp": st.column_config.TextColumn("Time"),
             "display": st.column_config.TextColumn("Activity"),
@@ -489,23 +489,23 @@ def render_user_access_control():
             st.caption(f"Joined: {user['join_date'].strftime('%Y-%m-%d')}")
         
         with col4:
-            if st.button("👁️ View", key=f"view_{user['user_id']}", use_container_width=True):
+            if st.button("👁️ View", key=f"view_{user['user_id']}", width='stretch'):
                 st.toast(f"Viewing {user['name']}'s details...")
         
         with col5:
-            if st.button("🔑 Reset PW", key=f"reset_{user['user_id']}", use_container_width=True):
+            if st.button("🔑 Reset PW", key=f"reset_{user['user_id']}", width='stretch'):
                 st.toast(f"Password reset link sent to {user['email']}")
         
         with col6:
             if user['status'] != 'Suspended':
-                if st.button("⛔ Suspend", key=f"suspend_{user['user_id']}", use_container_width=True):
+                if st.button("⛔ Suspend", key=f"suspend_{user['user_id']}", width='stretch'):
                     st.toast(f"❌ {user['name']} suspended")
             else:
-                if st.button("✅ Unsuspend", key=f"unsuspend_{user['user_id']}", use_container_width=True):
+                if st.button("✅ Unsuspend", key=f"unsuspend_{user['user_id']}", width='stretch'):
                     st.toast(f"✅ {user['name']} unsuspended")
         
         with col7:
-            if st.button("🗑️ Delete", key=f"delete_{user['user_id']}", use_container_width=True):
+            if st.button("🗑️ Delete", key=f"delete_{user['user_id']}", width='stretch'):
                 st.warning(f"⚠️ Are you sure? This will delete {user['name']}")
 
 
@@ -561,21 +561,21 @@ def render_ai_monitoring():
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        if st.button("🔄 Retrain AI Model", use_container_width=True):
+        if st.button("🔄 Retrain AI Model", width='stretch'):
             st.info("🔄 AI Model retraining initiated...")
             st.toast("Model retraining started. This may take 2-3 hours.")
     
     with col2:
-        if st.button("🔍 Validate AI Output", use_container_width=True):
+        if st.button("🔍 Validate AI Output", width='stretch'):
             st.info("🔍 Running validation tests...")
             st.toast("AI validation completed. 94.7% accuracy confirmed.")
     
     with col3:
-        if st.button("📊 View AI Logs", use_container_width=True):
+        if st.button("📊 View AI Logs", width='stretch'):
             st.info("📊 Fetching recent AI logs...")
     
     with col4:
-        if st.button("⚙️ Configure AI Settings", use_container_width=True):
+        if st.button("⚙️ Configure AI Settings", width='stretch'):
             st.info("⚙️ Opening AI configuration panel...")
 
 
@@ -642,7 +642,7 @@ def render_payment_governance():
         st.dataframe(
             display_trans[["transaction_id", "student_name", "amount", "method", "status_badge", "date"]],
             hide_index=True,
-            use_container_width=True,
+            width='stretch',
             column_config={
                 "transaction_id": st.column_config.TextColumn("Transaction ID", width=120),
                 "student_name": st.column_config.TextColumn("Student"),
@@ -672,17 +672,17 @@ def render_payment_governance():
                         st.caption(f"Method: {trans['method']}")
                     
                     with col3:
-                        if st.button("✅ Approve", key=f"approve_{trans['transaction_id']}", use_container_width=True):
+                        if st.button("✅ Approve", key=f"approve_{trans['transaction_id']}", width='stretch'):
                             st.success(f"✅ Transaction {trans['transaction_id']} approved!")
                             st.toast("Payment verified successfully")
                     
                     with col4:
-                        if st.button("❌ Reject", key=f"reject_{trans['transaction_id']}", use_container_width=True):
+                        if st.button("❌ Reject", key=f"reject_{trans['transaction_id']}", width='stretch'):
                             st.error(f"❌ Transaction {trans['transaction_id']} rejected!")
                             st.toast("Payment rejected")
                     
                     with col5:
-                        if st.button("🔍 View", key=f"view_trans_{trans['transaction_id']}", use_container_width=True):
+                        if st.button("🔍 View", key=f"view_trans_{trans['transaction_id']}", width='stretch'):
                             st.info(f"Viewing details for {trans['transaction_id']}")
         else:
             st.success("✅ All transactions verified!")
@@ -732,7 +732,7 @@ def render_payment_governance():
                     "Overdue": "#EF553B"
                 }
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         with col2:
             fig = px.bar(
@@ -748,7 +748,7 @@ def render_payment_governance():
                     "Overdue": "#EF553B"
                 }
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         st.divider()
         
@@ -781,7 +781,7 @@ def render_payment_governance():
                     st.write(f"Overdue: {student['days_overdue']} days")
                 
                 with col4:
-                    if st.button("📧 Send Reminder", key=f"remind_{student['student_id']}", use_container_width=True):
+                    if st.button("📧 Send Reminder", key=f"remind_{student['student_id']}", width='stretch'):
                         st.toast(f"Reminder sent to {student['name']}")
     
     # ===== TAB 3: FINANCIAL ANALYTICS =====
@@ -809,7 +809,7 @@ def render_payment_governance():
             hovermode='x unified',
             height=400
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
         
         # Payment method distribution
         col1, col2 = st.columns(2)
@@ -826,7 +826,7 @@ def render_payment_governance():
                 names=list(payment_methods.keys()),
                 title="Payment Methods Distribution"
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
         
         with col2:
             # Paid vs Unpaid chart
@@ -840,7 +840,7 @@ def render_payment_governance():
                 color_discrete_map={"Paid": colors[0], "Unpaid": colors[1]},
                 labels={"x": "Fee Status", "y": "Student Count"}
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width='stretch')
     
     # ===== TAB 4: SCHOLARSHIPS & DISCOUNTS =====
     with payment_tabs[3]:
@@ -890,11 +890,11 @@ def render_payment_governance():
                     st.write(f"Amount: {format_currency(item['amount'])}")
                 
                 with col4:
-                    if st.button("✅ Approve", key=f"approve_scholarship_{idx}", use_container_width=True):
+                    if st.button("✅ Approve", key=f"approve_scholarship_{idx}", width='stretch'):
                         st.success(f"✅ Approved: {format_currency(item['amount'])}")
                 
                 with col5:
-                    if st.button("❌ Reject", key=f"reject_scholarship_{idx}", use_container_width=True):
+                    if st.button("❌ Reject", key=f"reject_scholarship_{idx}", width='stretch'):
                         st.error(f"❌ Rejected")
     
     # ===== TAB 5: FRAUD DETECTION =====
@@ -961,7 +961,7 @@ def render_payment_governance():
                 
                 with col4:
                     if alert['status'] != 'Resolved':
-                        if st.button("🔍 Investigate", key=f"investigate_{alert['alert_id']}", use_container_width=True):
+                        if st.button("🔍 Investigate", key=f"investigate_{alert['alert_id']}", width='stretch'):
                             st.toast(f"Investigating {alert['alert_id']}...")
     
     # ===== TAB 6: RECEIPTS & INVOICES =====
@@ -991,7 +991,7 @@ def render_payment_governance():
             receipt_type = st.selectbox("Receipt Type", ["Payment Receipt", "Invoice", "Fee Statement"])
             receipt_date = st.date_input("Date")
         
-        if st.button("🖨️ Generate & Download Receipt", use_container_width=True):
+        if st.button("🖨️ Generate & Download Receipt", width='stretch'):
             st.success(f"✅ Receipt generated for {receipt_student}")
             st.toast("Receipt downloaded successfully")
             
@@ -1037,19 +1037,19 @@ def render_maintenance_control():
             
             if st.checkbox("Enable Maintenance Mode"):
                 st.warning("⚠️ Website will be inaccessible to users during maintenance")
-                if st.button("🔴 Enable Now", use_container_width=True):
+                if st.button("🔴 Enable Now", width='stretch'):
                     st.error("🛑 Maintenance mode ENABLED. Website is now in maintenance.")
                     st.toast("Maintenance mode activated")
             
-            if st.button("💾 Backup Database", use_container_width=True):
+            if st.button("💾 Backup Database", width='stretch'):
                 st.info("💾 Creating database backup...")
                 st.toast("Database backup completed successfully")
             
-            if st.button("🔄 Restore Database", use_container_width=True):
+            if st.button("🔄 Restore Database", width='stretch'):
                 st.warning("⚠️ This will restore the database to a previous state")
                 st.toast("Database restoration initiated")
             
-            if st.button("🚀 Clear Cache", use_container_width=True):
+            if st.button("🚀 Clear Cache", width='stretch'):
                 st.info("🧹 Cache cleared successfully")
                 st.toast("Cache cleared")
     
@@ -1057,20 +1057,20 @@ def render_maintenance_control():
         with st.container(border=True):
             st.write("### 🤖 AI Services")
             
-            if st.button("🔄 Restart AI Grading Service", use_container_width=True):
+            if st.button("🔄 Restart AI Grading Service", width='stretch'):
                 st.info("🔄 AI Grading Service restarting...")
                 st.toast("AI Grading Service restarted")
             
-            if st.button("🔄 Restart OCR Service", use_container_width=True):
+            if st.button("🔄 Restart OCR Service", width='stretch'):
                 st.info("🔄 OCR Service restarting...")
                 st.toast("OCR Service restarted")
             
-            if st.button("🧹 Clear Upload Files", use_container_width=True):
+            if st.button("🧹 Clear Upload Files", width='stretch'):
                 st.warning("⚠️ This will delete all uploaded files")
                 st.error("❌ Upload directory cleared")
                 st.toast("Uploaded files cleared")
             
-            if st.button("📊 Optimize Database", use_container_width=True):
+            if st.button("📊 Optimize Database", width='stretch'):
                 st.info("🔧 Database optimization in progress...")
                 st.toast("Database optimized")
 
@@ -1129,7 +1129,7 @@ def render_security_center():
                 st.write(f"{status_badge} {alert['status']}")
                 
                 if alert['status'] != 'Resolved':
-                    if st.button("Mark Resolved", key=f"resolve_{alert['alert_id']}", use_container_width=True):
+                    if st.button("Mark Resolved", key=f"resolve_{alert['alert_id']}", width='stretch'):
                         st.success(f"✅ {alert['alert_id']} marked as resolved")
     
     st.divider()
@@ -1139,18 +1139,18 @@ def render_security_center():
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        if st.button("🔒 Force Re-authentication", use_container_width=True):
+        if st.button("🔒 Force Re-authentication", width='stretch'):
             st.warning("⚠️ All users will be required to re-authenticate")
             st.toast("Force re-authentication initiated")
     
     with col2:
-        if st.button("⛔ Block IP Address", use_container_width=True):
+        if st.button("⛔ Block IP Address", width='stretch'):
             ip_to_block = st.text_input("Enter IP address to block")
             if ip_to_block:
                 st.error(f"🚫 IP {ip_to_block} has been blocked")
     
     with col3:
-        if st.button("🔑 Reset Admin Passwords", use_container_width=True):
+        if st.button("🔑 Reset Admin Passwords", width='stretch'):
             st.warning("⚠️ This will reset all admin passwords")
             st.toast("Admin password reset initiated")
 
@@ -1188,7 +1188,7 @@ def render_advanced_analytics():
         hovermode='x unified',
         height=400
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
     
     st.divider()
     
@@ -1206,7 +1206,7 @@ def render_advanced_analytics():
             labels={'date': 'Date', 'value': 'Number of Requests'},
             barmode='group'
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
     
     with col2:
         st.subheader("Revenue Growth")
@@ -1230,7 +1230,7 @@ def render_advanced_analytics():
             yaxis_title="Revenue ($)",
             height=400
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
 
 # ============================================================================
@@ -1296,14 +1296,14 @@ def render_broadcast_center():
     col1, col2 = st.columns(2)
     
     with col1:
-        if st.button("👁️ Preview Message", use_container_width=True):
+        if st.button("👁️ Preview Message", width='stretch'):
             with st.container(border=True):
                 st.write(f"### {broadcast_title}")
                 st.write(broadcast_message)
                 st.caption(f"Type: {broadcast_type} | Recipients: Students, Teachers" + (", Admins" if send_to_admins else ""))
     
     with col2:
-        if st.button("🚀 Send Broadcast", use_container_width=True):
+        if st.button("🚀 Send Broadcast", width='stretch'):
             st.success(f"✅ Broadcast sent to {['Students', 'Teachers'] + (['Admins'] if send_to_admins else [])}")
             st.toast(f"Message delivered to users via {', '.join(['Email' if send_email else '', 'In-App' if send_in_app else '', 'SMS' if send_sms else '', 'Push' if send_push else '']).strip(', ')}")
     
@@ -1402,7 +1402,7 @@ def render_role_permissions():
                     new_state = st.checkbox(perm, value=enabled, key=f"{role}_{perm}")
                 col_idx += 1
             
-            if st.button(f"💾 Save {role} Permissions", use_container_width=True):
+            if st.button(f"💾 Save {role} Permissions", width='stretch'):
                 st.success(f"✅ {role} permissions updated successfully")
     
     st.divider()
@@ -1419,7 +1419,7 @@ def render_role_permissions():
         new_role = st.selectbox("Assign role", ["Student", "Teacher", "Admin", "Super Admin"])
     
     with col3:
-        if st.button("✅ Assign", use_container_width=True):
+        if st.button("✅ Assign", width='stretch'):
             st.success(f"✅ {user_to_assign} assigned as {new_role}")
             st.toast(f"Role assignment completed")
 
@@ -1452,7 +1452,7 @@ def render_system_settings():
         phone = st.text_input("Phone", value="+1-555-123-4567")
         address = st.text_area("Address", value="123 Education Street, City, Country")
         
-        if st.button("💾 Save School Information", use_container_width=True):
+        if st.button("💾 Save School Information", width='stretch'):
             st.success("✅ School information updated")
     
     # Tab 2: Theme Customization
@@ -1469,7 +1469,7 @@ def render_system_settings():
             accent_color = st.color_picker("Accent Color", "#2ca02c")
             theme_mode = st.selectbox("Theme Mode", ["Light", "Dark", "Auto"])
         
-        if st.button("💾 Save Theme Settings", use_container_width=True):
+        if st.button("💾 Save Theme Settings", width='stretch'):
             st.success("✅ Theme settings updated")
     
     # Tab 3: Email Settings
@@ -1481,10 +1481,10 @@ def render_system_settings():
         email_address = st.text_input("Email Address", value="noreply@school.edu")
         email_password = st.text_input("Email Password", type="password")
         
-        if st.button("🧪 Test Email Connection", use_container_width=True):
+        if st.button("🧪 Test Email Connection", width='stretch'):
             st.success("✅ Email connection successful")
         
-        if st.button("💾 Save Email Settings", use_container_width=True):
+        if st.button("💾 Save Email Settings", width='stretch'):
             st.success("✅ Email settings updated")
     
     # Tab 4: Notification Settings
@@ -1501,7 +1501,7 @@ def render_system_settings():
         inapp_updates = st.checkbox("System Updates", value=True)
         inapp_alerts = st.checkbox("Security Alerts", value=True)
         
-        if st.button("💾 Save Notification Settings", use_container_width=True):
+        if st.button("💾 Save Notification Settings", width='stretch'):
             st.success("✅ Notification settings updated")
     
     # Tab 5: AI Settings
@@ -1518,7 +1518,7 @@ def render_system_settings():
             feedback_detail = st.slider("Feedback Detail Level", 1, 10, 7)
             enable_ocr = st.checkbox("Enable OCR for images", value=True)
         
-        if st.button("💾 Save AI Settings", use_container_width=True):
+        if st.button("💾 Save AI Settings", width='stretch'):
             st.success("✅ AI settings updated")
     
     # Tab 6: Payment Settings
@@ -1535,7 +1535,7 @@ def render_system_settings():
             late_payment_fee = st.number_input("Late Payment Fee (%)", value=5.0, step=0.5)
             enable_installments = st.checkbox("Enable Installments", value=True)
         
-        if st.button("💾 Save Payment Settings", use_container_width=True):
+        if st.button("💾 Save Payment Settings", width='stretch'):
             st.success("✅ Payment settings updated")
 
 

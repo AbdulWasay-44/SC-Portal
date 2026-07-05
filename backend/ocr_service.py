@@ -1,16 +1,23 @@
 from typing import Optional
 import io
 
-import easyocr
 import numpy as np
 from PIL import Image, ImageEnhance, ImageOps
 import streamlit as st
 
 
 class OCRService:
-    """Local OCR service backed by EasyOCR for image uploads."""
+    """Local OCR service backed by EasyOCR for image uploads.
+
+    EasyOCR (and its torch dependency) is imported lazily, on first use,
+    rather than at module import time. EasyOCR is a large, optional
+    dependency - if it isn't installed, the rest of the application
+    (quizzes, assignments, grading, portals, etc.) should still work.
+    OCR-dependent features will simply report themselves as unavailable.
+    """
 
     _reader = None
+    _unavailable_reason = None
 
     def __init__(self):
         self.reader = self._get_reader()
@@ -18,12 +25,18 @@ class OCRService:
     @classmethod
     def _get_reader(cls):
         """Create and cache the EasyOCR reader once per process."""
-        if cls._reader is None:
+        if cls._reader is None and cls._unavailable_reason is None:
             try:
+                import easyocr
                 cls._reader = easyocr.Reader(["en"], gpu=False, verbose=False)
+            except ImportError:
+                cls._unavailable_reason = (
+                    "The optional 'easyocr' package is not installed, so local OCR "
+                    "is unavailable. Install it with `pip install easyocr` to enable "
+                    "OCR-based text extraction from images."
+                )
             except Exception as e:
-                st.error(f"Failed to initialize local OCR engine: {str(e)}")
-                cls._reader = None
+                cls._unavailable_reason = f"Failed to initialize local OCR engine: {str(e)}"
         return cls._reader
 
     def extract_text_from_image(self, uploaded_file) -> Optional[str]:
@@ -37,7 +50,7 @@ class OCRService:
             Extracted text content or None if extraction fails
         """
         if self.reader is None:
-            st.error("Local OCR engine is not available.")
+            st.error(self._unavailable_reason or "Local OCR engine is not available.")
             return None
 
         try:

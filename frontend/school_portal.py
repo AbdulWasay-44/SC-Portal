@@ -138,7 +138,7 @@ def render_dashboard():
             hovermode='x unified',
             height=400
         )
-        st.plotly_chart(fig_att, use_container_width=True)
+        st.plotly_chart(fig_att, width='stretch')
     
     # Revenue Chart
     with col2:
@@ -155,7 +155,7 @@ def render_dashboard():
             yaxis_title="Amount (₹)",
             height=400
         )
-        st.plotly_chart(fig_rev, use_container_width=True)
+        st.plotly_chart(fig_rev, width='stretch')
     
     # Recent Activities
     st.divider()
@@ -219,7 +219,7 @@ def render_student_management():
         if status_filter != "All":
             df_students = df_students[df_students["Status"] == status_filter]
         
-        st.dataframe(df_students, use_container_width=True, hide_index=True)
+        st.dataframe(df_students, width='stretch', hide_index=True)
     
     with tab2:
         st.subheader("Add New Student")
@@ -284,7 +284,7 @@ def render_student_management():
                 go.Pie(labels=list(grades_dist.keys()), values=list(grades_dist.values()))
             ])
             fig_grade.update_layout(title="Grade Distribution")
-            st.plotly_chart(fig_grade, use_container_width=True)
+            st.plotly_chart(fig_grade, width='stretch')
         
         with col2:
             attendance_ranges = {"90-100%": 15, "80-90%": 7, "70-80%": 2, "<70%": 1}
@@ -292,7 +292,7 @@ def render_student_management():
                 go.Bar(x=list(attendance_ranges.keys()), y=list(attendance_ranges.values()))
             ])
             fig_att.update_layout(title="Attendance Distribution")
-            st.plotly_chart(fig_att, use_container_width=True)
+            st.plotly_chart(fig_att, width='stretch')
 
 
 # ==================== TEACHER MANAGEMENT ====================
@@ -323,7 +323,7 @@ def render_teacher_management():
         }
         
         df_teachers = pd.DataFrame(teachers_data)
-        st.dataframe(df_teachers, use_container_width=True, hide_index=True)
+        st.dataframe(df_teachers, width='stretch', hide_index=True)
     
     with tab2:
         st.subheader("Add New Teacher")
@@ -355,7 +355,7 @@ def render_teacher_management():
             fig_usage = go.Figure(data=[
                 go.Bar(y=[x[0] for x in usage_data], x=[x[1] for x in usage_data], orientation='h')
             ])
-            st.plotly_chart(fig_usage, use_container_width=True)
+            st.plotly_chart(fig_usage, width='stretch')
         
         with col2:
             st.write("**Teaching Performance Ratings**")
@@ -365,7 +365,7 @@ def render_teacher_management():
                 go.Bar(x=ratings, y=scores, marker_color='lightblue')
             ])
             fig_rating.update_layout(title="Average Rating (out of 5)")
-            st.plotly_chart(fig_rating, use_container_width=True)
+            st.plotly_chart(fig_rating, width='stretch')
 
 
 # ==================== CLASS & SUBJECT MANAGEMENT ====================
@@ -389,7 +389,7 @@ def render_class_management():
         }
         
         df_classes = pd.DataFrame(classes_data)
-        st.dataframe(df_classes, use_container_width=True, hide_index=True)
+        st.dataframe(df_classes, width='stretch', hide_index=True)
     
     with tab2:
         st.subheader("Subject Management")
@@ -404,7 +404,7 @@ def render_class_management():
         }
         
         df_subjects = pd.DataFrame(subjects_list)
-        st.dataframe(df_subjects, use_container_width=True, hide_index=True)
+        st.dataframe(df_subjects, width='stretch', hide_index=True)
         
         st.divider()
         col1, col2 = st.columns(2)
@@ -431,7 +431,7 @@ def render_class_management():
         }
         
         df_tt = pd.DataFrame(timetable, index=periods)
-        st.dataframe(df_tt, use_container_width=True)
+        st.dataframe(df_tt, width='stretch')
 
 
 # ==================== ATTENDANCE MANAGEMENT ====================
@@ -481,7 +481,7 @@ def render_attendance():
         }
         
         df_records = pd.DataFrame(records_data)
-        st.dataframe(df_records, use_container_width=True, hide_index=True)
+        st.dataframe(df_records, width='stretch', hide_index=True)
     
     with tab3:
         st.subheader("Attendance Analytics")
@@ -495,7 +495,7 @@ def render_attendance():
             fig_class_att = go.Figure(data=[
                 go.Bar(x=classes_att, y=attendance_pct, marker_color='lightgreen')
             ])
-            st.plotly_chart(fig_class_att, use_container_width=True)
+            st.plotly_chart(fig_class_att, width='stretch')
         
         with col2:
             st.write("**Monthly Attendance Trend**")
@@ -505,7 +505,7 @@ def render_attendance():
                 go.Scatter(x=months_att, y=avg_attendance, mode='lines+markers', fill='tozeroy')
             ])
             fig_trend.update_layout(title="School Average Attendance")
-            st.plotly_chart(fig_trend, use_container_width=True)
+            st.plotly_chart(fig_trend, width='stretch')
 
 
 # ==================== EXAMINATION & RESULTS ====================
@@ -547,7 +547,7 @@ def render_exams():
         }
         
         df_exams = pd.DataFrame(exams_list)
-        st.dataframe(df_exams, use_container_width=True, hide_index=True)
+        st.dataframe(df_exams, width='stretch', hide_index=True)
     
     with tab3:
         st.subheader("Upload Results")
@@ -577,7 +577,7 @@ def render_exams():
         }
         
         df_report = pd.DataFrame(report_card_data)
-        st.dataframe(df_report, use_container_width=True, hide_index=True)
+        st.dataframe(df_report, width='stretch', hide_index=True)
         
         col1, col2 = st.columns(2)
         with col1:
@@ -632,7 +632,7 @@ def render_ai_grading():
                 "AI Feedback": ["Good job!", "Needs improvement", "Very good"]
             }
             df_grading = pd.DataFrame(grading_results)
-            st.dataframe(df_grading, use_container_width=True, hide_index=True)
+            st.dataframe(df_grading, width='stretch', hide_index=True)
     
     with tab2:
         st.subheader("Grading History")
@@ -646,7 +646,7 @@ def render_ai_grading():
         }
         
         df_history = pd.DataFrame(history_data)
-        st.dataframe(df_history, use_container_width=True, hide_index=True)
+        st.dataframe(df_history, width='stretch', hide_index=True)
     
     with tab3:
         st.subheader("AI System Analytics")
@@ -668,7 +668,7 @@ def render_ai_grading():
             fig_conf = go.Figure(data=[
                 go.Bar(x=scores, y=count, marker_color='lightblue')
             ])
-            st.plotly_chart(fig_conf, use_container_width=True)
+            st.plotly_chart(fig_conf, width='stretch')
         
         with col2:
             st.write("**Grade Distribution (AI)**")
@@ -676,7 +676,7 @@ def render_ai_grading():
             fig_grade_ai = go.Figure(data=[
                 go.Pie(labels=list(grades_ai.keys()), values=list(grades_ai.values()))
             ])
-            st.plotly_chart(fig_grade_ai, use_container_width=True)
+            st.plotly_chart(fig_grade_ai, width='stretch')
 
 
 # ==================== ASSIGNMENT MANAGEMENT ====================
@@ -719,7 +719,7 @@ def render_assignments():
         }
         
         df_submissions = pd.DataFrame(submissions_data)
-        st.dataframe(df_submissions, use_container_width=True, hide_index=True)
+        st.dataframe(df_submissions, width='stretch', hide_index=True)
     
     with tab3:
         st.subheader("Assignment Performance Analytics")
@@ -733,7 +733,7 @@ def render_assignments():
             fig_sub = go.Figure(data=[
                 go.Bar(x=assignments, y=submission_rates, marker_color='lightblue')
             ])
-            st.plotly_chart(fig_sub, use_container_width=True)
+            st.plotly_chart(fig_sub, width='stretch')
         
         with col2:
             st.write("**Average Scores by Assignment**")
@@ -741,7 +741,7 @@ def render_assignments():
             fig_score = go.Figure(data=[
                 go.Bar(x=assignments, y=avg_scores, marker_color='lightgreen')
             ])
-            st.plotly_chart(fig_score, use_container_width=True)
+            st.plotly_chart(fig_score, width='stretch')
 
 
 # ==================== FEE & PAYMENT MANAGEMENT ====================
@@ -763,7 +763,7 @@ def render_fees():
         }
         
         df_structure = pd.DataFrame(fee_structure)
-        st.dataframe(df_structure, use_container_width=True, hide_index=True)
+        st.dataframe(df_structure, width='stretch', hide_index=True)
     
     with tab2:
         st.subheader("Student Fee Status")
@@ -784,7 +784,7 @@ def render_fees():
         }
         
         df_fees = pd.DataFrame(fees_student)
-        st.dataframe(df_fees, use_container_width=True, hide_index=True)
+        st.dataframe(df_fees, width='stretch', hide_index=True)
     
     with tab3:
         st.subheader("Payment Processing")
@@ -826,7 +826,7 @@ def render_fees():
             fig_coll = go.Figure(data=[
                 go.Scatter(x=months_fee, y=collections, mode='lines+markers', fill='tozeroy')
             ])
-            st.plotly_chart(fig_coll, use_container_width=True)
+            st.plotly_chart(fig_coll, width='stretch')
         
         with col2:
             st.write("**Payment Status Distribution**")
@@ -834,7 +834,7 @@ def render_fees():
             fig_status = go.Figure(data=[
                 go.Pie(labels=list(status_dist.keys()), values=list(status_dist.values()))
             ])
-            st.plotly_chart(fig_status, use_container_width=True)
+            st.plotly_chart(fig_status, width='stretch')
 
 
 # ==================== NOTIFICATIONS & ANNOUNCEMENTS ====================
@@ -876,7 +876,7 @@ def render_announcements():
         }
         
         df_notifications = pd.DataFrame(notifications)
-        st.dataframe(df_notifications, use_container_width=True, hide_index=True)
+        st.dataframe(df_notifications, width='stretch', hide_index=True)
 
 
 # ==================== LIBRARY MANAGEMENT ====================
@@ -907,7 +907,7 @@ def render_library():
         }
         
         df_books = pd.DataFrame(books)
-        st.dataframe(df_books, use_container_width=True, hide_index=True)
+        st.dataframe(df_books, width='stretch', hide_index=True)
     
     with tab2:
         st.subheader("Book Borrowing")
@@ -923,7 +923,7 @@ def render_library():
         }
         
         df_borrowing = pd.DataFrame(borrowing)
-        st.dataframe(df_borrowing, use_container_width=True, hide_index=True)
+        st.dataframe(df_borrowing, width='stretch', hide_index=True)
 
 
 # ==================== TRANSPORT & HOSTEL ====================
@@ -947,7 +947,7 @@ def render_transport_hostel():
         }
         
         df_transport = pd.DataFrame(transport)
-        st.dataframe(df_transport, use_container_width=True, hide_index=True)
+        st.dataframe(df_transport, width='stretch', hide_index=True)
     
     with tab2:
         st.subheader("Hostel Management")
@@ -963,7 +963,7 @@ def render_transport_hostel():
         }
         
         df_hostels = pd.DataFrame(hostels)
-        st.dataframe(df_hostels, use_container_width=True, hide_index=True)
+        st.dataframe(df_hostels, width='stretch', hide_index=True)
 
 
 # ==================== REPORTS ====================
@@ -1008,7 +1008,7 @@ def render_reports():
         }
         
         df_reports = pd.DataFrame(reports_list)
-        st.dataframe(df_reports, use_container_width=True, hide_index=True)
+        st.dataframe(df_reports, width='stretch', hide_index=True)
     
     with tab3:
         st.subheader("Export Report")

@@ -6,6 +6,6 @@ Pillow
 pdfplumber
 plotly
 openpyxl
-google-cloud-vision
 requests
+python-dotenv
 easyocr

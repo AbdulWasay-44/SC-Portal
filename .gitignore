@@ -1,35 +1,54 @@
 # ============================================================
-# .gitignore — School SaaS Platform
-# ============================================================
-# Ignore everything by default
-*
-
-# ============================================================
-# Exceptions (Files & Folders to strictly INCLUDE in GitHub)
+# .gitignore — SC Portals (School SaaS Platform)
 # ============================================================
 
-# Allow the git system itself
-!.git/
-!.gitignore
-
-# Folders to keep
-!backend/
-!backend/**
-!frontend/
-!frontend/**
-!SC-Portals/
-!SC-Portals/**
-
-# Specific files at root to keep
-!README.md
-!requirements.txt
-!setup.md
-!PROJECT_STRUCTURE.md
-
-# IMPORTANT: Ensure any sub-secrets inside the allowed folders are STILL ignored:
+# --- Secrets ---
 .env
+*.pem
+*.key
+
+# --- Python ---
 __pycache__/
-*.pyc
-.venv/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+.Python
+build/
+dist/
+
+# --- Virtual environments ---
 venv/
-*.db
+.venv/
+env/
+ENV/
+
+# --- Database (generated locally; run the seeders to populate) ---
+backend/*.db
+backend/*.sqlite3
+*.db-journal
+
+# --- Runtime / generated data ---
+uploads/*
+!uploads/.gitkeep
+!uploads/receipts/
+uploads/receipts/*
+!uploads/receipts/.gitkeep
+processed/*
+!processed/.gitkeep
+results/*
+!results/.gitkeep
+logs/
+*.log
+
+# --- Streamlit ---
+.streamlit/secrets.toml
+
+# --- Editor / OS junk ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- macOS zip artifacts ---
+__MACOSX/
